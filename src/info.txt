@@ -1,0 +1,222 @@
+Reglas
+
+1) SIEMPRE tiene que estar la variable "React" en todos los archivos
+
+Dependiendo la sintaxis:
+    CommonJS:
+        const React = requiere("react")
+
+    ES6 Modules:
+        import React from "react"
+
+2) Un componente de React es una funcion
+
+    funcion foo(){}
+
+    let foo = () => {}
+
+    class foo{}
+
+3) Un componente de react arranca en mayuscula
+
+    let Foo = () => {}
+
+4) Un componente de react SIEMPRE tiene retorno:
+    React.Component, String, DOMElement
+
+    let Foo = () => {return "hola mundo"}
+
+    let Foo = () => {return <p>Hola mundo verdura</p>;} 
+
+    let App = () => {return <Foo/>} 
+
+
+5) Un componente de react ejecutado se escribe en JSX, entonces:
+
+    Foo () === <Foo/>
+
+6) cada componente puede crear su estado propio local(state) y recibir parametros (props)
+
+7) Si el componente es del tipo clase la misma tiene que extender de la clase React.Component
+
+8) Todos los componentes hecho clase tienen que tener el metodo render
+
+9) Siempre un constructor de un componente de React arranca con un super(). El state de un componente se genera adentro de un constructor. 
+
+10) Ciclo de vida: son metodos q podemos usar en un componente si y solo si el mismo es de tip class. Se separan en 3 grupos
+
+https://es.reactjs.org/docs/react-component.html
+
+mount:
+    Constructor() = ideal para crear state o para hacer binding de metodos
+    render() = ideal para generar layout, cuando la app se dibuja
+    componentDidMount() = ideal para suscripciones (pedido a base de datos por ej). Te asegura que el elemento esta montado
+
+update: se da cuando un componente recibe nuevos props o cambia su state
+    shouldComponentUpdate() = ideal para chequear props y/o states y verificar si realmente hay que volver a ejecutar el render. 
+    Si los props/states no cambiaron entonces no deberia volver a ejecutarse el render ya seria en vano.
+
+    render() = vuelve a dibujar el component
+
+    componentDidUpdate() = termino de renderizar
+
+unmount:
+    componentWillUnmount() = ideal para cancelar suscripciones (por ejemplo un setInterval(), 
+    basicamente todo lo que este corriendo no va a frenar porq el elemento se desmonta)
+
+11) Como una regla general (no obligatoria), cuando un componente recibe props estos son los states del padre.
+
+12) El state no puede ser modificado por asignacion de variable sino que tenemos que describirle a react como se veria el nuevo estado
+let state = 1
+//si quiero cambiar state a 2, no se hace asignacion o una suma state = 2 o state += 1, sino que se usa "setState()"
+this.setState({state: state + 1})
+es asincroncia entonces un cambio no bloquea el UI  del usuario
+
+13) el state solo puede ser modificado por el objeto que lo creo.
+
+14) "This" solo se puede usar en constructor y render,no se puede usar en otros metodos
+
+-------------------
+PROPS 
+
+Foo() === <Foo/>
+Foo({a:1, b:3}) === <Foo a=1 b=3 />
+
+function Foo(props){
+    //este props que recibe un elemento de react es SIEMPRE un objeto.
+    props.a
+    props.b
+
+    let {a,b} = props
+}
+//Otra opcion para no hacer destructuring se puede hacer asi el Foo() anterior
+function Foo({a,b}){
+    //entonces el props ya esta desctructurado en 2 variables nuevas para este metodo que son iguales a las 2 variables que vienen de props.
+}
+//Si tenes muchas variables
+Foo({a:1, b:3, c:5, d:7, e:8}) === <Foo a=1 b=3 c=5 d=7 e=8 />
+
+function Foo({a,b, ...rest}){
+    //los 3 puntos y el nombre generan una nueva variable que es un objeto con todos los objetos que no mencionaste
+    //rest.c, rest.d, rest.e
+    //este rest es solo para objetos, no para arrays
+}
+
+ver https://es6-features.org
+-------------------
+-------------------
+Conceptos de Javascript pelado
+
+Destructuring:
+
+    let arr = [1,2,3];
+    //para acceder a cada elemento hay que hacer esto:
+    let var1 = arr[0]
+    let var2 = arr[1]
+    let var3 = arr[2]
+
+    //Eso anterior se puede reemplazar por esto
+    let [var1, var2, var3] = arr;
+
+    //Para objetos
+
+    let obj = {x:1,y:2,z:3};
+
+    let var_x = obj.x
+    let var_y = obj.y
+    let var_z = obj.z
+    //la equivalencia a lo anterior con destructuring seria
+
+    let {x:var_x, y:var_y, z:var_z} = obj
+
+    //si ademas la variable "objetivo" es igual a la variable que vas a asociarlo (supongamos en vez de var_x se llama x)
+    //entonces se puede hacer esto
+
+    let {x,y,z} = obj
+-------------------
+comilla para atras:
+En la linea dice {`/${link}`} El resultado que se espera es que cada link sea con una "/"  para que la url ya sea accesible
+Las comillas para atras permiten que vos no tengas que concatenar la cadena asi: "/" + link.
+
+---------------------
+Explicacion del "this"
+
+Contexto: Objeto que contiene a la funcion
+
+function Foo(){
+    console.log(this)
+}
+Va a imprimir el objeto que contiene a la funcion foo, en este caso el window (el objeto global)
+
+let obj= {
+    fn : function(){
+        console.log(this)
+    }
+}
+obj.fn()
+
+Va a retornar el objeto que contiene a fn, en este caso "obj"
+
+otras formas de ejecutar funciones en js son
+
+call/apply/bind/new = estas formas de ejecucion nos permiten decidir manualmente
+QUE QUIERO YO que valga la variable "this"
+
+function ctx(a,b){
+    console.log(a,b)
+    console.log(this)
+}
+ctx() //retorna undefined undefined windows
+ctx(1,2) //retorna 1 2 windows
+
+Function.call() //retorna void
+ctx.call() //exactamente igual que ctx(): undefined undefined windows
+ctx.call({call:true},1,2) // resultado: 1,2 {call:true} cambia el this de windows al {call:true}
+
+Function.apply() // retorna void
+ctx.apply() //undefined undefined windows
+ctx.apply({apply:true}, [1,2]) //resultado 1 2 {apply:true} Es igual que call, solo que los parametros se agrupan en un arrays
+
+new Function // retorna this
+new ctx //retorna undefined undefined {} . el ultimo es un objeto vacio
+new ctx(1,2) // retorna 1 2 {} 
+
+Function.bind() //retorna Function
+let r = ctx.bind({bind:true},1,2)
+
+r() // retorna 1, 2 {bind:true}
+
+----------------------
+REDUX:
+
+store = state
+reducer = this.setState
+actions = callbacks de eventos
+
+Store = es un objeto que va a tener el estado de una aplicacion
+        Se crea ejecutando la la funcion createStore la cual toma como primer parametro un reducer
+Reducer = Es una funcion pura (funcion pura = no cambia los param q recibe) que recibe el estado anterior de la aplicacion y un action y en 
+        base a ambos tiene que retornar un nuevo estado de aplicacion
+Ejemplo:
+    let reducer = (estadoAnterior, action) => {
+        switch(action.type){
+            case "agregar":
+                return ...;
+            case "editar":
+                return...;
+            case "eliminar":
+                return...;
+        };
+    };
+
+Action = Todo lo que se haga aca adentro tiene que ser sincronico. Es una funcion pura que por defecto no puede hacer nada asincronico
+        y siempre tiene que retornar un objeto
+Ejemplos:
+    let action = () => { return {type:""}} //por convencion casi siempre viene una clave "type" con un string
+    let action = () => ({type:""})
+
+Dependencias de redux:
+redux
+react-redux
+
+Redux puede ser usado en javascript, sin necesidad de react, por eso existe la libreria redux sola
