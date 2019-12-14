@@ -189,6 +189,9 @@ r() // retorna 1, 2 {bind:true}
 ----------------------
 REDUX:
 
+npm i redux
+npm i react-redux
+
 store = state
 reducer = this.setState
 actions = callbacks de eventos
@@ -220,3 +223,42 @@ redux
 react-redux
 
 Redux puede ser usado en javascript, sin necesidad de react, por eso existe la libreria redux sola
+
+------------------------
+Implementacion de redux en React
+
+Se usa la funcion connect() que toma dos parametros, ambos son funciones y lo que se retorna de estas funciones
+van a parar a los props del componente:
+
+1- El primero es una funcion que recibe una copia del store (todo el store):
+
+    (store) => {
+        return {
+            contador_redux: store.contador_redux
+        }
+    }
+
+2 - El segundo es una funcion que recibe una funcion llamada "dispatch" y nos sirve para juntar nuestros actions con esta funcion dispatch,
+asi los actions saben que tienen que despachar al reducer
+
+    import {bindActionCreators} from "react-redux"
+
+    (dispatch) => {
+        return {
+            aumentar: bindActionCreators
+        }
+    }
+
+-----------------------------------------------------
+React Router
+
+https://reacttraining.com/react-router/web/guides/quick-start
+
+npm i react-router-dom
+
+Sueltos: Switch - Route - Redirect - Link - NavLink
+Para poder usarse tienen que ser hijos de un router (hijos o nietos etc)
+
+Router: BrowserRouter - HashRouter - MemoryRouter - StaticRouter
+
+SSR : 
